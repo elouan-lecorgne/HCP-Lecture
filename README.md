@@ -1,7 +1,7 @@
 # Programmation GPU : La Puissance du Parallélisme au Service de l'Informatique
 
 ## Introduction (1 minute 30)
-
+ **_Bapt_**
 ### 1.1 Le "Pourquoi" du GPU (Accroche)
 
 **Accroche :** *"Votre carte graphique ne sert pas qu'à jouer."*
@@ -25,16 +25,24 @@ Comprendre comment le GPU a révolutionné l’informatique grâce à sa capacit
 
 ---
 
-## I. Le Concept Fondamental : Parallélisme Massif (3 minutes)
+## I. Le Concept Fondamental : Parallélisme Massif (3 minutes) **_Elouan_** /  **_Bapt_**
 
-### 2.1 La Différence Structurelle (Simple)
+### 2.1 La Différence Structurelle (Simple) **_Elouan_**
 
 - CPU : quelques cœurs, gros, optimisés pour la **latence**.  
 - GPU : des milliers de petits cœurs, optimisés pour le **débit (throughput)**.
 
 C’est cette architecture qui permet un traitement simultané massif.
+ 
+### 2.2 Quand utiliser le GPU ? **_Elouan_**
 
-### 2.2 Comment ça “Programme” ?
+Le GPU excelle dans les problèmes **“embarrassingly parallel”**, c'est-à-dire où les calculs sont indépendants :
+
+**Exemples :**
+- **Rendu d’image** : chaque pixel est calculé indépendamment.
+- **Entraînement d’IA** : chaque donnée passe dans les mêmes matrices.
+
+### 2.3 Comment ça “Programme” ? **_Bapt_**
 
 Principe :  
 Le programmeur envoie **un seul kernel** au GPU et lui dit :  
@@ -46,17 +54,9 @@ Langages permettant cela :
 
 *(Pas besoin d’entrer dans la syntaxe.)*
 
-### 2.3 Quand utiliser le GPU ?
-
-Le GPU excelle dans les problèmes **“embarrassingly parallel”**, c'est-à-dire où les calculs sont indépendants :
-
-**Exemples :**
-- **Rendu d’image** : chaque pixel est calculé indépendamment.
-- **Entraînement d’IA** : chaque donnée passe dans les mêmes matrices.
-
 ---
 
-## II. Applications Modernes (2 minutes)
+## II. Applications Modernes (2 minutes) **_Elouan_**
 
 ### Intelligence Artificielle
 Le Deep Learning est un gigantesque calcul matriciel.  
@@ -70,7 +70,7 @@ Simulations physiques (fluides, molécules), modélisation scientifique, calcul 
 
 ---
 
-## III. Exemple Original : Le Casseur de Code à 4 Chiffres (3 minutes 30)
+## III. Exemple Original : Le Casseur de Code à 4 Chiffres (3 minutes 30) **_A définir_**
 
 ### 4.1 Le Défi
 Un code secret à **4 chiffres** : de 0000 à 9999.  
@@ -99,7 +99,7 @@ Impact visuel :
 
 ---
 
-## Conclusion (30 secondes)
+## Conclusion (30 secondes) **_A définir_**
 
 Le GPU est devenu essentiel pour résoudre les problèmes à grande échelle.  
 Il ne remplace pas le CPU :  
