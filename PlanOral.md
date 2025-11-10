@@ -4,7 +4,7 @@
 
 ### 1.1 Le "Pourquoi" du GPU (Accroche)
 
-**Accroche :** *"Votre carte graphique ne sert pas qu'à jouer."*
+Carte graphique
 
 **Constat :**  
 Aujourd'hui, les problèmes informatiques modernes (IA, science, cryptographie) nécessitent des calculs massifs et répétitifs.  
@@ -107,3 +107,6 @@ Il ne remplace pas le CPU :
 - le **GPU** apporte la force brute parallèle.
 
 Ensemble, ils forment le duo central de l’informatique moderne.
+
+
+
