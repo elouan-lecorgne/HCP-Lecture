@@ -1,7 +1,7 @@
 # Programmation GPU : La Puissance du Parallélisme au Service de l'Informatique
 
-## Introduction (1 minute 30)
- **_Bapt_**
+## Introduction (1 minute 30)  **_Bapt_**
+
 ### 1.1 Le "Pourquoi" du GPU (Accroche)
 
 **Accroche :** *"Votre carte graphique ne sert pas qu'à jouer."*
