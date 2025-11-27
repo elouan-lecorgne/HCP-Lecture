@@ -26,19 +26,57 @@ Pour comprendre CUDA, il faut cesser de penser comme un humain qui fait une tâc
 
 ### 1.1 La Différence Structurelle
 
-La différence entre un CPU et un GPU n'est pas une question de "puissance" brute, mais de philosophie de travail.
+La différence entre un CPU et un GPU n'est pas une question de "puissance" brute, mais de **philosophie de travail**. Observons leur architecture respective :
 
 #### Le CPU (Latency Oriented)
 
-Imaginez un professeur de mathématiques brillant, capable de résoudre des équations complexes, de gérer des interruptions (téléphone qui sonne), et de passer d'une tâche à l'autre rapidement. Mais il est seul. S'il doit corriger 10 000 copies simples (additions basiques), il devra les faire une par une pendant des heures.
+![Architecture CPU](image/CPU.png)
+*Schéma 1 : Architecture d'un CPU moderne*
+
+Regardez le premier schéma : un CPU typique possède **2 cœurs** (cores), chacun équipé de :
+- **L1 et L2** : des mémoires cache ultra-rapides
+- **ALU** (Arithmetic Logic Unit) : l'unité de calcul
+- **R** (Registers) : des registres pour stocker temporairement les données
+- **CU** (Control Unit) : l'unité de contrôle qui orchestre tout
+- **CACHE L3** : une mémoire cache partagée entre les cœurs
+
+Imaginez un professeur de mathématiques brillant. Il résout des équations complexes, gère des interruptions (téléphone qui sonne), et passe d'une tâche à l'autre rapidement grâce à ses caches L1/L2 qui lui donnent un accès instantané aux données récentes. Mais il est seul (ou accompagné de quelques collègues seulement). S'il doit corriger 10 000 copies simples, il devra les faire une par une pendant des heures.
 
 **Structure :** Peu de cœurs (4 à 32), mais très rapides et polyvalents. Chaque cœur peut exécuter des instructions complexes, gérer des branchements conditionnels, et accéder efficacement à une grande mémoire cache.
 
 #### Le GPU (Throughput Oriented)
+![Architecture GPU](image/GPU.png)
+*Schéma 2 : Architecture d'un GPU avec sa hiérarchie Grid → Block → Thread*
 
-Imaginez une armée de 10 000 élèves de primaire. Individuellement, ils sont lents et ne savent faire que des calculs simples (additions, multiplications). Ils sont incapables de gérer des tâches complexes ou imprévues. Mais ils sont nombreux. Si vous devez corriger 10 000 copies d'additions, chaque élève en prend une, et le travail est fini en quelques secondes.
+Regardez maintenant le second schéma : l'architecture GPU est radicalement différente. On observe :
 
-**Structure :** Des milliers de cœurs simplifiés (2 000 à 10 000+), conçus pour exécuter la même instruction sur des données différentes simultanément. C'est le modèle SIMD (Single Instruction, Multiple Data).
+- **Un Block** contenant des dizaines d'**ALU** (chaque ALU = 1 thread)
+- **CACHE** : une mémoire partagée au niveau du bloc
+- **CU** : une seule unité de contrôle pour tout le bloc
+- **C LA MEME** : la "mémoire partagée" (shared memory) accessible par tous les threads du bloc
+- **GLOBAL MEMORY** : la mémoire principale du GPU
+
+La légende précise : **1 ALU == 1 THREAD**. Un GPU moderne contient des milliers de ces ALU.
+
+Imaginez une armée de 10 000 élèves de primaire. Individuellement, ils sont lents et ne savent faire que des calculs simples (additions, multiplications). Regardez sur le schéma : tous les ALU d'un même bloc partagent la même **Control Unit** (CU). Cela signifie qu'ils exécutent **tous la même instruction au même moment**, mais sur des données différentes. Ils sont incapables de gérer des tâches complexes ou imprévues.
+
+Mais ils sont nombreux. Si vous devez corriger 10 000 copies d'additions, chaque élève (thread) en prend une, et le travail est fini en quelques secondes.
+
+**Structure :** Des milliers de cœurs simplifiés (2 000 à 10 000+), organisés en **Blocks** (comme visible sur le schéma). Chaque bloc possède :
+- Son propre **CACHE** et sa mémoire partagée
+- Des dizaines de threads (ALU) qui exécutent la même instruction simultanément
+- Une **Control Unit** qui coordonne tous les threads du bloc
+
+C'est le modèle **SIMD** (Single Instruction, Multiple Data) : une seule instruction, appliquée à des milliers de données en parallèle.
+
+Le schéma GPU montre également la hiérarchie complète :
+- **Grid** : l'ensemble de tous les blocs lancés
+- **Block** : un groupe de threads partageant cache et mémoire
+- **Thread** (représenté par chaque ALU) : l'unité d'exécution individuelle
+- **Warp** : groupe de 32 threads qui s'exécutent de manière strictement synchrone
+
+Cette organisation explique pourquoi le GPU excelle sur les problèmes où des milliers de calculs identiques doivent être effectués simultanément.
+
 
 ### 1.2 Quand utiliser le GPU ?
 
