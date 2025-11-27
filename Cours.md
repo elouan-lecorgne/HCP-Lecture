@@ -1,20 +1,22 @@
 # Programmation GPU : La Puissance du Parallélisme au Service de l'Informatique
 
-## Introduction 
+## Introduction
 
-### 1.1 Le "Pourquoi" du GPU (Accroche)
+La programmation d’un GPU (Graphics Processing Unit) consiste à exploiter une carte graphique non plus seulement pour afficher des images, mais pour accélérer des calculs en masse grâce au parallélisme. Elle s’est imposée dans le calcul haute performance (High Performance Computing), l’intelligence artificielle (IA) et la simulation parce qu’elle permet de traiter rapidement des volumes de données et des opérations répétitives que les processeurs centraux (Central Processing Unit) classiques gèrent moins efficacement. L’idée directrice est simple : quand une tâche peut être découpée en milliers de petits calculs indépendants, un processeur graphique peut les exécuter simultanément et faire gagner un ordre de grandeur en temps et en efficacité.
 
-Carte graphique
+### 1.1 Le pourquoi du GPU
 
-**Constat :**  
+À l'origine dédiée au rendu 3D, la carte graphique est devenue un véritable accélérateur de calcul, capable d'exécuter en parallèle des milliers de threads semblables sur de grandes quantités de données.
 
-**Objectif de la présentation :**  
+**Constat:** Les processeurs (CPU) sont excellents pour les tâches séquentielles et la réactivité, mais de plus en plus d'applications sont massivement parallèles: entraînement de modèles d'IA, traitement d'images et de signaux, simulations numériques, finance, bio-informatique. Miser sur le GPU, c'est profiter d'un meilleur débit de calcul, souvent avec un rapport performance/énergie plus favorable, dès que l'algorithme s'y prête.
 
-### 1.2 L’Analogie Clé : Le Cerveau vs. L’Armée
 
-- **Le CPU (Central Processing Unit)** : Le PDG.  
 
-- **Le GPU (Graphics Processing Unit)** : L’Armée.  
+### 1.2 Analogie clé
+
+**Le CPU (Central Processing Unit): le PDG.** Le CPU coordonne, prend des décisions rapides et gère des tâches variées avec souplesse. Il excelle quand la logique est complexe, que les étapes dépendent fortement les unes des autres ou que la latence de réponse est critique.
+
+**Le GPU (Graphics Processing Unit): l'armée.** Le GPU mobilise des milliers de "soldats" pour exécuter la même consigne sur des données différentes, en parallèle. Il brille dès qu'il faut "avancer en rang serré" sur des tableaux, des images, des matrices, ou des flux massifs, où le débit global prime sur la micro-optimisation d'un seul fil d'exécution.
 
 ---
 
