@@ -443,4 +443,4 @@ Pour les recherches pouvant s’arrêter tôt, le CPU peut parfois être plus ef
 Le coût de préparation du GPU (allocations, transferts) n’est amorti que sur de **gros volumes de calcul**.
 
 
-
+**Par Elouan Lecorgne et Baptiste Krugler**
