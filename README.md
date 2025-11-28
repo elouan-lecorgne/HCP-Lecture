@@ -365,3 +365,5 @@ Le GPU excelle quand :
 3. L'opération est **répétitive** sur beaucoup de données
 
 ---
+
+**Par Elouan Lecorgne et Baptiste Krugler**
