@@ -14,9 +14,11 @@ La programmation d’un GPU (Graphics Processing Unit) consiste à exploiter une
 
 ### 1.2 Analogie clé
 
-**Le CPU (Central Processing Unit): le PDG.** Le CPU coordonne, prend des décisions rapides et gère des tâches variées avec souplesse. Il excelle quand la logique est complexe, que les étapes dépendent fortement les unes des autres ou que la latence de réponse est critique.
+**Le CPU (Central Processing Unit): le PDG**   
+Le CPU coordonne, prend des décisions rapides et gère des tâches variées avec souplesse. Il excelle quand la logique est complexe, que les étapes dépendent fortement les unes des autres ou que la latence de réponse est critique.
 
-**Le GPU (Graphics Processing Unit): l'armée.** Le GPU mobilise des milliers de "soldats" pour exécuter la même consigne sur des données différentes, en parallèle. Il brille dès qu'il faut "avancer en rang serré" sur des tableaux, des images, des matrices, ou des flux massifs, où le débit global prime sur la micro-optimisation d'un seul fil d'exécution.
+**Le GPU (Graphics Processing Unit): l'armée**  
+ Le GPU mobilise des milliers de "soldats" pour exécuter les mêmed consigned sur des données différentes, en parallèle. Il brille dès qu'il faut traiter des tableaux, des images, des matrices, ou des flux massifs, où le débit global prime sur la micro-optimisation d'un seul fil d'exécution.
 
 ---
 
@@ -53,10 +55,8 @@ Regardez maintenant le second schéma : l'architecture GPU est radicalement diff
 - **Un Block** contenant des dizaines d'**ALU** (chaque ALU = 1 thread)
 - **CACHE** : une mémoire partagée au niveau du bloc
 - **CU** : une seule unité de contrôle pour tout le bloc
-- **C LA MEME** : la "mémoire partagée" (shared memory) accessible par tous les threads du bloc
 - **GLOBAL MEMORY** : la mémoire principale du GPU
 
-La légende précise : **1 ALU == 1 THREAD**. Un GPU moderne contient des milliers de ces ALU.
 
 Imaginez une armée de 10 000 élèves de primaire. Individuellement, ils sont lents et ne savent faire que des calculs simples (additions, multiplications). Regardez sur le schéma : tous les ALU d'un même bloc partagent la même **Control Unit** (CU). Cela signifie qu'ils exécutent **tous la même instruction au même moment**, mais sur des données différentes. Ils sont incapables de gérer des tâches complexes ou imprévues.
 
@@ -103,7 +103,7 @@ Le GPU n'est pas magique et ne convient pas à tous les problèmes. Il faut l'ut
 
 ### 1.3 Comment ça "Programme" ?
 
-Programmer un GPU demande de gérer deux processeurs séparés qui communiquent. Dans le vocabulaire CUDA, nous utilisons deux termes clés :
+Programmer un GPU demande de gérer deux processeurs séparés qui communiquent. Dans le vocabulaire CUDA, deux termes clés sont utilisés:
 
 - **Host (L'Hôte) :** C'est le CPU et sa mémoire RAM.
 - **Device (Le Périphérique) :** C'est le GPU et sa mémoire globale (VRAM).
@@ -126,8 +126,6 @@ Le GPU ne peut pas lire directement la RAM de votre PC. Il faut copier les donn�
 ```c
 cudaMemcpy(d_A, h_A, size * sizeof(float), cudaMemcpyHostToDevice);
 ```
-
-⚠️ **Attention :** C'est l'étape la plus lente ! Si le calcul est trop court, le temps de transfert annulera complètement le gain de vitesse. C'est comme prendre l'avion pour aller à 10 km : le temps d'embarquement dépasse le temps de vol.
 
 #### Étape 3 - L'Exécution (Le Kernel)
 
@@ -190,22 +188,6 @@ int id = blockIdx.x * blockDim.x + threadIdx.x;
 - Bloc 1, Thread 0 → id = 256
 - Bloc 3, Thread 255 → id = 1023
 
-### 2.3 Les Warps : Le Secret de l'Efficacité
-
-Les threads ne s'exécutent pas isolément. Ils sont regroupés en **warps** de 32 threads qui exécutent la même instruction simultanément.
-
-**Conséquence importante :** Si dans un warp, certains threads prennent la branche `if` et d'autres la branche `else`, le GPU devra exécuter **les deux branches séquentiellement**, en désactivant temporairement certains threads. C'est la **divergence de branche**, qui tue les performances.
-
-#### Code à éviter (divergence)
-
-```c
-if (threadIdx.x % 2 == 0) {
-    // Calcul lourd
-} else {
-    // Calcul différent
-}
-```
-
 ---
 
 ## III. Applications Modernes
@@ -214,7 +196,6 @@ if (threadIdx.x % 2 == 0) {
 
 Les GPU sont devenus indispensables pour l'entraînement des réseaux de neurones. Un modèle comme GPT-3 contient 175 milliards de paramètres. L'entraînement nécessite des milliards de multiplications matricielles, opération parfaitement parallélisable. Sans GPU, l'entraînement de ces modèles prendrait des années au lieu de semaines.
 
-**Exemple :** NVIDIA A100 peut effectuer 312 TFLOPS (téraflops) de calcul en précision simple, contre ~1 TFLOPS pour un CPU moderne.
 
 ### 3.2 Cryptomonnaies et Blockchain
 
@@ -223,9 +204,8 @@ Le minage de Bitcoin repose sur le calcul intensif de fonctions de hachage SHA-2
 ### 3.3 Science et Ingénierie
 
 - **Simulations climatiques :** Calcul de l'évolution de millions de cellules atmosphériques en parallèle.
-- **Biologie moléculaire :** Simulation du repliement de protéines (projet Folding@home).
 - **Astrophysique :** Simulation de la formation des galaxies avec des milliards de particules.
-- **Rendu 3D et Animation :** Pixar et autres studios utilisent des fermes de GPU pour le rendu de films d'animation.
+- **Rendu 3D et Animation :** Pixar et autres studios utilisent énormément de GPU en simultané pour le rendu de films d'animation.
 
 ### 3.4 Traitement d'Image et Vidéo
 
@@ -235,67 +215,48 @@ Le minage de Bitcoin repose sur le calcul intensif de fonctions de hachage SHA-2
 
 ---
 
-## IV. Exemple Pratique : Casseur de Code PIN
+# IV. Exemple Pratique : Casseur de Code PIN
 
-### 4.1 Le Défi : casser un code à 4 chiffres
+Ce tutoriel vous guide pas à pas pour reproduire le casseur de code PIN avec deux approches : CPU et GPU. À la fin, vous lancerez le code et observerez la différence de performance.
 
-On veut retrouver un code PIN secret à 4 chiffres.  
-Les codes possibles vont de 0000 à 9999, soit 10 000 combinaisons.
+## Sommaire
+1. [Prérequis](#prérequis)
+2. [Introduction](#introduction)
+3. [Partie 1 : Kernel GPU](#partie-1--kernel-gpu)
+4. [Partie 2 : Comparaison CPU et Configuration GPU](#partie-2--comparaison-cpu-et-configuration-gpu)
+5. [Partie 3 : Gestion Mémoire et Lancement GPU](#partie-3--gestion-mémoire-et-lancement-gpu)
+6. [Exécution](#exécution)
+7. [Analyse des Résultats](#analyse-des-résultats)
 
-**Objectif :** comparer deux approches pour retrouver ce code le plus vite possible :
+---
 
-- Une approche CPU (le "PDG" qui teste tout seul, dans l'ordre)
-- Une approche GPU (l'"armée" de milliers de threads qui testent tout en même temps)
+## Prérequis
 
-### 4.2 La Méthode CPU (Le PDG)
+- Google Colab avec GPU activé (Runtime → Change runtime type → GPU)
 
-Avec le CPU, on teste les combinaisons **une par une** :
+---
 
-- 0000 → 0001 → 0002 → … → 9999
+## Introduction
 
-Le code C correspondant est :
+Ce tutoriel présente la **programmation parallèle sur GPU avec CUDA** à travers un exemple concret : trouver un code PIN parmi **1 milliard de combinaisons** (0 à 999 999 999).
 
-```c
-for (int i = 0; i < NOMBRE_COMBINAISONS; i++) {
-    if (i == SECRET_PIN) {
-        resultat_cpu = i;
-        break; // Trouvé ! On arrête.
-    }
-}
-```
+L'objectif est de comprendre comment le GPU peut résoudre des problèmes massivement parallèles en lançant des milliers de threads simultanément, contrairement au CPU qui traite les données séquentiellement. Nous comparerons les deux approches pour mesurer l'accélération apportée par le GPU.
 
-- Le CPU ne fait qu'une seule tentative à la fois.
-- Dans le pire cas : **10 000 tentatives séquentielles**.
-- Dans notre exemple, si le code est 8342, il faut 8343 étapes.
+Le principe : au lieu de tester les codes un par un, nous lançons **1 milliard de threads en parallèle**, chacun testant une combinaison différente simultanément.
 
-On peut voir le CPU comme un PDG très intelligent, mais qui doit signer les 10 000 documents lui‑même, un par un.
+---
 
-### 4.3 La Méthode GPU (L'Armée)
+## Partie 1 : Kernel GPU
 
-Avec le GPU, on change complètement de stratégie :  
-au lieu d'un seul PDG, on envoie **10 000 soldats en parallèle**.
+```cuda
+#include <stdio.h>
+#include <cuda_runtime.h>
+#include <time.h>
 
-**Idée :**
-
-- Le thread n°0 teste le code 0000
-- Le thread n°1 teste le code 0001
-- …
-- Le thread n°4732 teste le code 4732
-- …
-- Le thread n°9999 teste le code 9999
-
-Tous les threads travaillent **en même temps**.
-
-Le kernel CUDA ressemble à ceci :
-
-```c
 __global__ void findPinKernel(int* d_resultat, int code_secret) {
-    // Calcul du "numéro de soldat" global
     int mon_id = blockIdx.x * blockDim.x + threadIdx.x;
     
-    // On s'assure qu'on reste dans l'intervalle 0–9999
-    if (mon_id < 10000) {
-        // Si mon ID correspond au code secret, j'écris la réponse
+    if (mon_id < 1000000000) {
         if (mon_id == code_secret) {
             *d_resultat = mon_id;
         }
@@ -303,37 +264,183 @@ __global__ void findPinKernel(int* d_resultat, int code_secret) {
 }
 ```
 
-Dans le `main`, on lance par exemple :
+**Explication :**
 
-```c
-findPinKernel<<<10, 1000>>>(d_resultat, SECRET_PIN);
-```
+Le **kernel** est une fonction qui s'exécute sur le GPU, marquée par le mot-clé `__global__`.
 
-- 10 blocs × 1000 threads = **10 000 threads**
-- Chaque thread teste **exactement une** combinaison
+**Formule d'ID thread :** `mon_id = blockIdx.x * blockDim.x + threadIdx.x`
+- `blockIdx.x` : numéro du bloc dans la grille
+- `blockDim.x` : nombre de threads par bloc (1024)
+- `threadIdx.x` : numéro du thread dans son bloc
+- Résultat : chaque thread obtient un identifiant unique de 0 à ~1 milliard
 
-**Conceptuellement :**
+**Logique :** Chaque thread teste UNE SEULE combinaison (son ID). Si le thread trouve le code secret, il l'écrit dans la mémoire GPU pointée par `d_resultat`. Tous les threads s'exécutent en parallèle.
 
-- Tous les codes sont testés dans **une seule vague** de calcul.
-- Dès qu'un thread trouve la bonne valeur, il écrit le résultat.
-
-**Temps conceptuel :**
-
-- **CPU :** jusqu'à 10 000 étapes l'une après l'autre.
-- **GPU :** une seule "étape" où 10 000 essais sont faits en parallèle (plus un petit temps de préparation : allocations, copies mémoire, etc.).
-
-**Impact visuel pour la présentation :**
-
-- CPU → une barre de progression qui avance petit à petit.
-- GPU → 10 000 points qui travaillent en même temps, la réponse apparaît quasi instantanément.
-
-**Remarque importante pour les étudiants :**
-
-- Pour un petit problème (10 000 codes), le temps de préparation GPU (cudaMalloc, cudaMemcpy, etc.) peut être comparable ou plus lourd que le calcul.
-- Mais si le code avait 8 ou 10 chiffres (des millions ou milliards de combinaisons), le CPU deviendrait rapidement trop lent, alors que le GPU pourrait exploiter son parallélisme massif.
 ---
 
-## Conclusion (30 secondes) **_A définir_**
+## Partie 2 : Comparaison CPU et Configuration GPU
+
+```cuda
+int main() {
+    const int SECRET_PIN = 999999999;
+    const int NOMBRE_COMBINAISONS = 1000000000;
+
+    printf("Objectif : Trouver le code PIN secret (%d) parmi %d combinaisons.\n", 
+           SECRET_PIN, NOMBRE_COMBINAISONS);
+    
+    int resultat_cpu = -1;
+    int resultat_gpu_host = -1;
+    clock_t start, end;
+    double temps_cpu, temps_gpu;
+
+    // ========== VERSION CPU (pour comparaison) ==========
+    printf("\nLancement de l'attaque CPU (séquentielle)...\n");
+    start = clock();
+    for (int i = 0; i < NOMBRE_COMBINAISONS; i++) {
+        if (i == SECRET_PIN) {
+            resultat_cpu = i;
+            break;
+        }
+    }
+    end = clock();
+    temps_cpu = ((double) (end - start)) / CLOCKS_PER_SEC;
+    printf("CPU - Code trouvé : %d\n", resultat_cpu);
+    printf("CPU - Temps : %f secondes (%d étapes)\n", temps_cpu, resultat_cpu + 1);
+
+    // ========== CONFIGURATION GPU ==========
+    printf("\nLancement de l'attaque GPU (parallèle)...\n");
+    start = clock();
+    
+    int threadsPerBlock = 1024;
+    int numBlocks = (NOMBRE_COMBINAISONS + threadsPerBlock - 1) / threadsPerBlock;
+    
+    printf("Configuration GPU: %d blocs × %d threads = %d threads totaux\n", 
+           numBlocks, threadsPerBlock, numBlocks * threadsPerBlock);
+```
+
+**Explication :**
+
+**Partie CPU :** On calcule d'abord avec le CPU en testant séquentiellement chaque combinaison dans une boucle `for`. Cette partie sert de **référence** pour mesurer l'accélération du GPU. Le CPU doit parcourir jusqu'à 1 milliard d'itérations.
+
+**Configuration GPU :** 
+- `threadsPerBlock = 1024` : nombre maximum de threads par bloc (limite matérielle des GPU)
+- `numBlocks` : calculé pour couvrir toutes les combinaisons → 976 563 blocs
+- **Architecture CUDA :** Les threads sont organisés en blocs, eux-mêmes organisés en grille
+- Total : 976 563 blocs × 1024 threads/bloc = ~1 milliard de threads lancés en parallèle
+
+---
+
+## Partie 3 : Gestion Mémoire et Lancement GPU
+
+```cuda
+    // ========== ALLOCATION MÉMOIRE GPU ==========
+    int* d_resultat;
+    cudaError_t err = cudaMalloc((void**)&d_resultat, sizeof(int));
+    if (err != cudaSuccess) {
+        printf("Erreur cudaMalloc: %s\n", cudaGetErrorString(err));
+        return 1;
+    }
+
+    // ========== TRANSFERT CPU → GPU ==========
+    err = cudaMemcpy(d_resultat, &resultat_gpu_host, sizeof(int), cudaMemcpyHostToDevice);
+    if (err != cudaSuccess) {
+        printf("Erreur cudaMemcpy H2D: %s\n", cudaGetErrorString(err));
+        return 1;
+    }
+
+    // ========== LANCEMENT DU KERNEL ==========
+    findPinKernel<<<numBlocks, threadsPerBlock>>>(d_resultat, SECRET_PIN);
+    cudaDeviceSynchronize();
+
+    // ========== TRANSFERT GPU → CPU ==========
+    err = cudaMemcpy(&resultat_gpu_host, d_resultat, sizeof(int), cudaMemcpyDeviceToHost);
+    if (err != cudaSuccess) {
+        printf("Erreur cudaMemcpy D2H: %s\n", cudaGetErrorString(err));
+        return 1;
+    }
+
+    // ========== LIBÉRATION MÉMOIRE ==========
+    cudaFree(d_resultat);
+
+    end = clock();
+    temps_gpu = ((double) (end - start)) / CLOCKS_PER_SEC;
+
+    printf("GPU - Code trouvé : %d\n", resultat_gpu_host);
+    printf("GPU - Temps : %f secondes (toutes combinaisons en parallèle)\n", temps_gpu);
+
+    // ========== RÉSULTATS ==========
+    printf("\n--- Conclusion ---\n");
+    printf("Temps CPU: %f sec\n", temps_cpu);
+    printf("Temps GPU: %f sec (inclut la préparation)\n", temps_gpu);
+    
+    if (temps_cpu > temps_gpu) {
+        printf("ACCÉLÉRATION: Le GPU est %.2fx plus rapide !\n", temps_cpu / temps_gpu);
+    }
+    
+    return 0;
+}
+```
+
+**Explication :**
+
+**Workflow CUDA en 5 étapes :**
+
+1. **`cudaMalloc`** : Alloue de la mémoire sur le GPU (comme `malloc` mais pour le GPU). Le préfixe `d_` indique "device" (GPU).
+
+2. **`cudaMemcpy(Host→Device)`** : Copie les données du CPU vers le GPU. La mémoire du GPU est séparée de la RAM, il faut transférer explicitement.
+
+3. **`kernel<<<blocs, threads>>>()`** : Syntaxe spéciale CUDA pour lancer le kernel avec la configuration désirée. Les `<<<>>>` définissent combien de threads exécuteront le kernel.
+
+4. **`cudaDeviceSynchronize()`** : Bloque le CPU jusqu'à ce que tous les threads GPU aient terminé leur exécution.
+
+5. **`cudaMemcpy(Device→Host)`** : Récupère le résultat depuis le GPU vers le CPU, puis `cudaFree` libère la mémoire GPU.
+
+**Point clé :** La mémoire GPU et CPU sont physiquement séparées. Toute donnée doit être explicitement transférée entre les deux.
+
+---
+
+
+## Exécution
+
+**Dans Google Colab :**
+
+Cellule 1 - Créer le fichier :
+```python
+%%writefile Casseur_de_Code_GPUvsCPU.cu
+[Copier tout le code ci-dessus]
+```
+
+Cellule 2 - Compiler et exécuter :
+```bash
+!nvcc -o casseur Casseur_de_Code_GPUvsCPU.cu
+!./casseur
+```
+
+Le programme affichera les temps d'exécution CPU vs GPU et le facteur d'accélération.
+
+
+## Analyse des Résultats
+
+### Ordre de grandeur observé
+Le GPU est environ **15 à 20 fois plus rapide** que le CPU pour ce problème.
+
+- **CPU** : plusieurs secondes (≈ 2–3 s)  
+- **GPU** : une fraction de seconde (≈ 0.1–0.2 s)
+
+### Pourquoi cette accélération ?
+- Le **CPU** teste les combinaisons **une par une** → 1 milliard d’itérations séquentielles.  
+- Le **GPU** lance **~1 milliard de threads**, chacun testant une combinaison **en parallèle**, dans une seule vague d’exécution.
+
+### Cas limite important
+Si l’on cherche un code plus petit (ex. `1000` au lieu de `999 999 999`), l’écart de performance se réduit fortement :
+
+- Le **CPU** trouve le code en quelques millisecondes (arrêt précoce).
+- Le **GPU** met toujours ≈ **0.12 s**, car il **exécute tous les threads**, même si la solution est trouvée très tôt.
+
+### Conclusion
+Le GPU est avantageux pour les problèmes **massivement parallèles** où **toutes les données doivent être traitées**.  
+Pour les recherches pouvant s’arrêter tôt, le CPU peut parfois être plus efficace.  
+Le coût de préparation du GPU (allocations, transferts) n’est amorti que sur de **gros volumes de calcul**.
 
 
 
